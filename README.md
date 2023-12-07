@@ -10,5 +10,31 @@
 
 A tiny key/value store with encrypted backups.
 
-###### dpw | 2023.12.06
+## API
+
+* get key -> Option<value>
+* set key value -> value
+* del key -> bool
+* keys -> Vec<string>
+* dbsize -> usize
+* savedb -> usize
+
+## As a library
+
+* for rust projects
+* thread safe
+* async compatible?
+
+## As a service
+
+* language agnostic
+* socket listeners
+
+## Implementation
+
+Option A: HashMap<String, String> ; simple
+Option B: db = HashMap<String, Vec<String>> for key/values where values are pushed for each set then evaluated in the background.
+
+
+###### dpw | 2023.12.07
 
