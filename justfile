@@ -9,12 +9,10 @@ alias fmt := format
 
 os := `uname`
 
-
 # run the standard tests
 test:
     clear
     cargo test
-
 
 # run the standard tests + clippy and fmt
 test-all:
