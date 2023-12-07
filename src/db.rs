@@ -48,6 +48,7 @@ mod tests {
     #[test]
     fn set_get_remove() {
         let mut store = create_store();
+        assert_eq!(store.dbsize(), 0);
         let key = "mykey";
         let value = "this is my value";
 
@@ -60,6 +61,11 @@ mod tests {
 
         let resp = store.get("not a valid key");
         assert!(resp.is_none());
+
+        let resp = store.remove(key);
+        assert!(resp.is_some());
+
+        assert_eq!(store.dbsize(), 0);
     }
 
     #[test]
