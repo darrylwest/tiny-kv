@@ -12,10 +12,10 @@ A tiny key/value store with encrypted backups.
 
 ## API
 
-* get key -> Option<value>
+* get key -> Option\<value\>
 * set key value -> value
 * del key -> bool
-* keys -> Vec<string>
+* keys -> Vec\<\&str\>
 * dbsize -> usize
 * savedb -> usize
 
