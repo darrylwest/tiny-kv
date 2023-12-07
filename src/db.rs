@@ -1,40 +1,48 @@
+use hashbrown::HashMap;
 ///
 ///
 // use anyhow::Result;
-// use std::sync::{Arc, RwLock};
 // use std::thread;
-use hashbrown::HashMap;
+use std::sync::{Arc, RwLock};
 
 pub struct DataStore {
-    map: HashMap<String, String>,
+    map: Arc<RwLock<HashMap<String, String>>>,
 }
 
 impl DataStore {
     /// create teh data store
     pub fn create() -> DataStore {
         DataStore {
-            map: HashMap::new(),
+            map: Arc::new(RwLock::new(HashMap::new())),
         }
     }
 
     /// set the value for this k/v pair
     pub fn set(&mut self, key: &str, value: &str) -> Option<String> {
-        self.map.insert(key.to_string(), value.to_string())
+        // Get a write lock and insert the pair into the map
+        let mut map = self.map.write().unwrap();
+        map.insert(key.to_string(), value.to_string())
     }
 
     /// return the value for the given key
-    pub fn get(&self, key: &str) -> Option<&String> {
-        self.map.get(key)
+    pub fn get(&self, key: &str) -> Option<String> {
+        // Get a read lock and get the value from the map
+        let map = self.map.read().unwrap();
+        map.get(key).cloned()
     }
 
     /// remove the value for this key
     pub fn remove(&mut self, key: &str) -> Option<String> {
-        self.map.remove(key)
+        // Get a write lock and remove the value from the map
+        let mut map = self.map.write().unwrap();
+        map.remove(key)
     }
 
     /// return the number of elements
     pub fn dbsize(&self) -> usize {
-        self.map.len()
+        // Get a read lock and get the length of the map
+        let map = self.map.read().unwrap();
+        map.len()
     }
 
     /// save the database and return the file size
@@ -83,7 +91,6 @@ mod tests {
     #[test]
     fn create() {
         let store = DataStore::create();
-        assert_eq!(store.map.len(), 0);
         assert_eq!(store.dbsize(), 0);
     }
 }
