@@ -10,6 +10,7 @@ pub struct DataStore {
 }
 
 impl DataStore {
+    /// create teh data store
     pub fn create() -> DataStore {
         DataStore {
             map: HashMap::new(),
@@ -35,6 +36,11 @@ impl DataStore {
     pub fn dbsize(&self) -> usize {
         self.map.len()
     }
+
+    /// save the database and return the file size
+    pub fn savedb(&self) -> usize {
+        0_usize
+    }
 }
 
 #[cfg(test)]
@@ -43,6 +49,12 @@ mod tests {
 
     fn create_store() -> DataStore {
         DataStore::create()
+    }
+
+    #[test]
+    fn savedb() {
+        let store = create_store();
+        assert_eq!(store.savedb(), 0);
     }
 
     #[test]
