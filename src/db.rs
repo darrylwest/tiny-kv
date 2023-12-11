@@ -5,6 +5,7 @@ use hashbrown::HashMap;
 // use std::thread;
 use std::sync::{Arc, RwLock};
 
+#[derive(Debug, Clone)]
 pub struct DataStore {
     map: Arc<RwLock<HashMap<String, String>>>,
 }
