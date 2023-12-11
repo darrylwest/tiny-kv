@@ -17,7 +17,8 @@ A tiny key/value store with encrypted backups.
 * del key -> bool
 * keys -> Vec\<\&str\>
 * dbsize -> usize
-* savedb -> usize
+* loaddb -> Result\<usize\>
+* savedb -> Result<\<usize\>
 
 ## As a library
 
@@ -35,6 +36,13 @@ A tiny key/value store with encrypted backups.
 Option A: HashMap<String, String> ; simple
 Option B: db = HashMap<String, Vec<String>> for key/values where values are pushed for each set then evaluated in the background.
 
+## Uses
 
-###### dpw | 2023.12.07
+* udp socket service - uses this as a backing store; includes a repl
+* otp-session-service - 
+* auth-service - registration, access to otp/sessions
+* configuration-service - to enable dynamic config loading and reloading
+* logging-service - a centralized log target
+
+###### dpw | 2023.12.11
 

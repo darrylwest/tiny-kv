@@ -1,8 +1,9 @@
+///
+///
+use anyhow::Result;
 use hashbrown::HashMap;
-///
-///
-// use anyhow::Result;
 // use std::thread;
+use log::info;
 use std::sync::{Arc, RwLock};
 
 #[derive(Debug, Clone)]
@@ -47,8 +48,15 @@ impl DataStore {
     }
 
     /// save the database and return the file size
-    pub fn savedb(&self) -> usize {
-        0_usize
+    pub fn savedb(&self, filename: &str) -> Result<usize> {
+        info!("save db to {}", filename);
+        Ok(0_usize)
+    }
+
+    /// load data from the specified filename; return the number of elements read in
+    pub fn loaddb(&self, filename: &str) -> Result<usize> {
+        info!("read db from {}", filename);
+        Ok(0_usize)
     }
 }
 
@@ -61,9 +69,17 @@ mod tests {
     }
 
     #[test]
-    fn savedb() {
+    fn loaddb() {
+        let filename = "/tmp/tiny-kv.data";
         let store = create_store();
-        assert_eq!(store.savedb(), 0);
+        assert_eq!(store.loaddb(filename).unwrap(), 0);
+    }
+
+    #[test]
+    fn savedb() {
+        let filename = "/tmp/tiny-kv.data";
+        let store = create_store();
+        assert_eq!(store.savedb(filename).unwrap(), 0);
     }
 
     #[test]
