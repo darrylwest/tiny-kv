@@ -58,7 +58,9 @@ impl DataStore {
     pub fn savedb(&self, filename: &str) -> Result<usize> {
         info!("save db to {}", filename);
         let map = self.map.read().unwrap();
-        Ok(map.len())
+        let sz = file_ops::map2kv_file(filename, map.clone())?;
+
+        Ok(sz)
     }
 
     /// load data from the specified filename; return the number of elements read in
@@ -92,9 +94,14 @@ mod tests {
 
     #[test]
     fn savedb() {
-        let filename = "tests/users-out.kv";
+        let ref_file = "tests/users-ref.kv";
         let store = create_store();
-        assert_eq!(store.savedb(filename).unwrap(), 0);
+        assert!(store.loaddb(ref_file).unwrap() >= 10);
+        let dbsize = store.dbsize();
+
+        let sz = store.savedb("./tests/kvdb-out.kv");
+        assert!(sz.is_ok());
+        assert_eq!(dbsize, sz.unwrap());
     }
 
     #[test]
