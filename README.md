@@ -39,10 +39,11 @@ Option B: db = HashMap<String, Vec<String>> for key/values where values are push
 ## Uses
 
 * udp socket service - uses this as a backing store; includes a repl
-* otp-session-service - 
+* otp-session-service - one-time-password and sessions
 * auth-service - registration, access to otp/sessions; stores user id, email, first/last, date created, last updated, etc
 * configuration-service - to enable dynamic config loading and reloading
-* logging-service - a centralized log target
+* messaging-service - store for future delivery key recipient: xxx, send_at: xxx, message: bla bla bla
+* event-queue-service - post to queue, events broadcast to subscribers
 
 ###### dpw | 2023.12.12
 
