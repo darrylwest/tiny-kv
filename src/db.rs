@@ -40,6 +40,12 @@ impl DataStore {
         map.remove(key)
     }
 
+    /// return a list of keys
+    pub fn keys(&self) -> Vec<String> {
+        let map = self.map.read().unwrap();
+        map.keys().cloned().collect::<Vec<_>>()
+    }
+
     /// return the number of elements
     pub fn dbsize(&self) -> usize {
         // Get a read lock and get the length of the map
@@ -50,12 +56,16 @@ impl DataStore {
     /// save the database and return the file size
     pub fn savedb(&self, filename: &str) -> Result<usize> {
         info!("save db to {}", filename);
-        Ok(0_usize)
+        let map = self.map.read().unwrap();
+        Ok(map.len())
     }
 
     /// load data from the specified filename; return the number of elements read in
     pub fn loaddb(&self, filename: &str) -> Result<usize> {
         info!("read db from {}", filename);
+        // let mut map = self.map.write().unwrap();
+        // TODO add file_ops to read and write various file types
+
         Ok(0_usize)
     }
 }
@@ -70,14 +80,14 @@ mod tests {
 
     #[test]
     fn loaddb() {
-        let filename = "/tmp/tiny-kv.data";
+        let filename = "tests/users-ref.kv";
         let store = create_store();
         assert_eq!(store.loaddb(filename).unwrap(), 0);
     }
 
     #[test]
     fn savedb() {
-        let filename = "/tmp/tiny-kv.data";
+        let filename = "tests/users-out.kv";
         let store = create_store();
         assert_eq!(store.savedb(filename).unwrap(), 0);
     }
@@ -92,6 +102,10 @@ mod tests {
         let resp = store.set(key, value);
         assert!(resp.is_none());
         assert_eq!(store.dbsize(), 1);
+
+        let keys = store.keys();
+        println!("{:?}", keys);
+        assert_eq!(keys.len(), store.dbsize());
 
         let resp = store.get(key).unwrap();
         assert_eq!(resp, value);
