@@ -3,6 +3,7 @@
 use anyhow::Result;
 use hashbrown::HashMap;
 // use std::thread;
+use crate::file_ops;
 use log::info;
 use std::sync::{Arc, RwLock};
 
@@ -63,10 +64,14 @@ impl DataStore {
     /// load data from the specified filename; return the number of elements read in
     pub fn loaddb(&self, filename: &str) -> Result<usize> {
         info!("read db from {}", filename);
-        // let mut map = self.map.write().unwrap();
-        // TODO add file_ops to read and write various file types
+        let kv = file_ops::kv_file2map(filename)?;
 
-        Ok(0_usize)
+        let mut map = self.map.write().unwrap();
+        for (k, v) in kv.iter() {
+            let _ = map.insert(k.to_string(), v.to_string());
+        }
+
+        Ok(map.len())
     }
 }
 
@@ -82,7 +87,7 @@ mod tests {
     fn loaddb() {
         let filename = "tests/users-ref.kv";
         let store = create_store();
-        assert_eq!(store.loaddb(filename).unwrap(), 0);
+        assert!(store.loaddb(filename).unwrap() >= 10);
     }
 
     #[test]

@@ -1,9 +1,9 @@
 [package]
 name = "tiny-kv"
-version = "0.2.2"
+version = "0.2.3"
 edition = "2021"
 rust-version = "1.70"
-description = "A tiny key/value store."
+description = "A tiny key/value store used as a library for storing small bits of data."
 keywords = ["keys", "k/v-store", "secrets" ]
 license = "MIT OR Apach-2.0"
 readme = "README.md"
