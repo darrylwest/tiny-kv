@@ -44,6 +44,9 @@ Option B: db = HashMap<String, Vec<String>> for key/values where values are push
 * configuration-service - to enable dynamic config loading and reloading
 * messaging-service - store for future delivery key recipient: xxx, send_at: xxx, message: bla bla bla
 * event-queue-service - post to queue, events broadcast to subscribers
+* inventory reference, inventory control
+* todo, shopping, event lists
+* fitness-tracker
 
 ###### dpw | 2023.12.12
 
