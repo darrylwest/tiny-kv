@@ -1,8 +1,24 @@
-use std::io::{self, Write};
 ///
 /// create a repl for set get remove keys dbsize loaddb savedb
 ///
 use tiny_kv::{db::DataStore, VERSION};
+use clap::Parser;
+use std::io::{self, Write};
+use std::env;
+
+#[derive(Debug, Default, Parser)]
+#[command(
+    name="udp-client",
+    author,
+    version,
+    about="A repl client for udp-server backed by tiny-kv.",
+    long_about=None,
+)]
+struct Cli {
+    /// config filename to override default
+    #[arg(short, long)]
+    data_file: Option<String>,
+}
 
 fn split2(msg: &str) -> (String, String) {
     let mut split = msg.split_whitespace();
@@ -39,8 +55,15 @@ fn help(startup: bool) -> String {
     buf
 }
 
-fn start() {
+fn start(args: Vec<String>) {
+    let cli = Cli::parse_from(args);
     let mut store = DataStore::create();
+
+    if cli.data_file.is_some() {
+        let filename = cli.data_file.unwrap();
+        let n = store.loaddb(filename.as_str()).expect("data file should exist...");
+        println!("{:?} records loaded", n);
+    }
 
     let mut ln = 0;
     println!("{}", help(true));
@@ -111,5 +134,24 @@ fn start() {
 }
 
 fn main() {
-    start()
+    let args: Vec<String> = env::args().collect();
+    start(args)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_create_client() {
+        assert!(true)
+    }
+
+    #[test]
+    fn test_split2() {
+        let ss = "set mykey my long value with other stuff";
+        let (cmd, params) = split2(ss);
+        assert_eq!(cmd, "set");
+        assert!(params.starts_with("mykey"));
+    }
 }
