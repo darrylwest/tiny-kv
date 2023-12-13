@@ -9,7 +9,7 @@ use std::sync::{Arc, RwLock};
 
 #[derive(Debug, Clone)]
 pub struct DataStore {
-    map: Arc<RwLock<HashMap<String, String>>>,
+    map: Arc<RwLock<HashMap<String, Vec<u8>>>>,
 }
 
 impl DataStore {
@@ -21,21 +21,21 @@ impl DataStore {
     }
 
     /// set the value for this k/v pair
-    pub fn set(&mut self, key: &str, value: &str) -> Option<String> {
+    pub fn set(&mut self, key: &str, value: Vec<u8>) -> Option<Vec<u8>> {
         // Get a write lock and insert the pair into the map
         let mut map = self.map.write().unwrap();
-        map.insert(key.to_string(), value.to_string())
+        map.insert(key.to_string(), value.to_owned())
     }
 
     /// return the value for the given key
-    pub fn get(&self, key: &str) -> Option<String> {
+    pub fn get(&self, key: &str) -> Option<Vec<u8>> {
         // Get a read lock and get the value from the map
         let map = self.map.read().unwrap();
         map.get(key).cloned()
     }
 
     /// remove the value for this key
-    pub fn remove(&mut self, key: &str) -> Option<String> {
+    pub fn remove(&mut self, key: &str) -> Option<Vec<u8>> {
         // Get a write lock and remove the value from the map
         let mut map = self.map.write().unwrap();
         map.remove(key)
@@ -70,7 +70,7 @@ impl DataStore {
 
         let mut map = self.map.write().unwrap();
         for (k, v) in kv.iter() {
-            let _ = map.insert(k.to_string(), v.to_string());
+            let _ = map.insert(k.to_string(), v.clone());
         }
 
         Ok(map.len())
@@ -109,9 +109,9 @@ mod tests {
         let mut store = create_store();
         assert_eq!(store.dbsize(), 0);
         let key = "mykey";
-        let value = "this is my value";
+        let value = "this is my value".as_bytes().to_vec();
 
-        let resp = store.set(key, value);
+        let resp = store.set(key, value.clone());
         assert!(resp.is_none());
         assert_eq!(store.dbsize(), 1);
 
