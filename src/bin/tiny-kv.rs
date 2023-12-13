@@ -67,9 +67,14 @@ fn start() {
                     println!("ok");
                 }
             }
-            // remove
+            "loaddb" => {
+                if let Ok(sz) = store.loaddb(&params) {
+                    println!("loaded {} records.", sz)
+                } else {
+                    println!("error")
+                }
+            }
             // savedb
-            // loaddb
             _ => println!("not ready for {} yet", cmd),
         }
 
