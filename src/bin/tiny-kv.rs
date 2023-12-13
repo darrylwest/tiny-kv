@@ -58,6 +58,18 @@ fn start() {
                     println!("ok");
                 }
             }
+            "remove" => {
+                if let Some(value) = store.remove(&params) {
+                    let val = value.clone();
+                    let sval = String::from_utf8(val).unwrap();
+                    println!("{:?} -> {}", value, sval);
+                } else {
+                    println!("ok");
+                }
+            }
+            // remove
+            // savedb
+            // loaddb
             _ => println!("not ready for {} yet", cmd),
         }
 
