@@ -7,7 +7,7 @@ use crate::file_ops;
 use log::info;
 use std::sync::{Arc, RwLock};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Default, Clone)]
 pub struct DataStore {
     map: Arc<RwLock<HashMap<String, Vec<u8>>>>,
 }
