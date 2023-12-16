@@ -46,8 +46,18 @@ fn main() -> Result<()> {
 mod tests {
     // use super::*;
 
+    use crate::create_client;
+
     #[test]
     fn test_create_client() {
-        assert!(true)
+        let args: Vec<String> = vec![
+            "tiny-kv".to_string(),
+            "--data-file".to_string(),
+            "./tests/users-ref.kv".to_string(),
+        ];
+        let result = create_client(args);
+        assert!(result.is_ok());
+        let client = result.unwrap();
+        println!("{:?}", client);
     }
 }

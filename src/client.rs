@@ -42,6 +42,7 @@ pub fn help(startup: bool) -> String {
     buf
 }
 
+#[derive(Debug, Default)]
 pub struct Client {
     db: DataStore,
 }
