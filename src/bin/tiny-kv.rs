@@ -34,6 +34,7 @@ fn create_client(args: Vec<String>) -> Result<Client> {
     Ok(Client::create(store))
 }
 
+/// read env args for cli parsing
 fn cli_args() -> Vec<String> {
     let args: Vec<String> = env::args().collect();
 
@@ -42,9 +43,7 @@ fn cli_args() -> Vec<String> {
 
 fn main() -> Result<()> {
     let mut repl = create_client(cli_args())?;
-    let _ = repl.start();
-
-    Ok(())
+    repl.start()
 }
 
 #[cfg(test)]
