@@ -131,10 +131,26 @@ mod tests {
     use super::*;
 
     #[test]
+    fn create_client() {
+        let db = DataStore::create();
+        let client = Client::create(db);
+        println!("{:?}", client);
+        assert_eq!(client.db.dbsize(), 0);
+    }
+
+    #[test]
     fn test_split2() {
         let ss = "set mykey my long value with other stuff";
         let (cmd, params) = split2(ss);
         assert_eq!(cmd, "set");
         assert!(params.starts_with("mykey"));
+    }
+
+    #[test]
+    fn test_help() {
+        let hlp = help(true);
+        println!("{}", hlp);
+        let hlp = help(false);
+        println!("{}", hlp);
     }
 }
