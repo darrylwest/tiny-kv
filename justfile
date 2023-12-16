@@ -37,7 +37,7 @@ docs:
     cargo doc --no-deps --open
 
 # run the debug app
-run:
+repl:
     clear && cargo run --bin tiny-kv
 
 # build the release

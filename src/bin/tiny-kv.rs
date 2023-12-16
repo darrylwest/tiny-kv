@@ -34,9 +34,14 @@ fn create_client(args: Vec<String>) -> Result<Client> {
     Ok(Client::create(store))
 }
 
-fn main() -> Result<()> {
+fn cli_args() -> Vec<String> {
     let args: Vec<String> = env::args().collect();
-    let mut repl = create_client(args)?;
+
+    args
+}
+
+fn main() -> Result<()> {
+    let mut repl = create_client(cli_args())?;
     let _ = repl.start();
 
     Ok(())
@@ -44,9 +49,13 @@ fn main() -> Result<()> {
 
 #[cfg(test)]
 mod tests {
-    // use super::*;
+    use super::*;
 
-    use crate::create_client;
+    #[test]
+    fn test_cli_args() {
+        let args = cli_args();
+        println!("{:?}", args);
+    }
 
     #[test]
     fn test_create_client() {
