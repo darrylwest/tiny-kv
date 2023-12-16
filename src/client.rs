@@ -160,7 +160,7 @@ mod tests {
     }
 
     #[test]
-    fn test_commands() {
+    fn test_loop() {
         let db = DataStore::create();
         let mut client = Client {
             db,
@@ -168,6 +168,12 @@ mod tests {
         };
         let resp = client.start();
         assert!(resp.is_ok());
+    }
+
+    #[test]
+    fn test_commands() {
+        let db = DataStore::create();
+        let mut client = Client::create(db);
 
         client.process_command("dbsize");
         client.process_command("keys");
