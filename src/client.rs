@@ -82,58 +82,63 @@ impl Client {
                 break;
             }
 
-            let (cmd, params) = split2(&input);
-            match cmd.as_str() {
-                "help" => println!("{}", help(false)),
-                "dbsize" => println!("{}", self.db.dbsize()),
-                "keys" => println!("{:?}", self.db.keys()),
-                "get" => {
-                    if let Some(value) = self.db.get(&params) {
-                        let val = value.clone();
-                        let sval = String::from_utf8(val).unwrap();
-                        println!("{:?} -> {}", value, sval);
-                    } else {
-                        println!("error");
-                    }
-                }
-                "set" => {
-                    let (key, value) = split2(&params);
-                    if let Some(value) = self.db.set(&key, value.into_bytes()) {
-                        let val = value.clone();
-                        let sval = String::from_utf8(val).unwrap();
-                        println!("{:?} -> {}", value, sval);
-                    } else {
-                        println!("ok");
-                    }
-                }
-                "remove" => {
-                    if let Some(value) = self.db.remove(&params) {
-                        let val = value.clone();
-                        let sval = String::from_utf8(val).unwrap();
-                        println!("{:?} -> {}", value, sval);
-                    } else {
-                        println!("ok");
-                    }
-                }
-                "loaddb" => {
-                    if let Ok(sz) = self.db.loaddb(&params) {
-                        println!("loaded {} records.", sz);
-                    } else {
-                        println!("error");
-                    }
-                }
-                "savedb" => {
-                    if let Ok(sz) = self.db.savedb(&params) {
-                        println!("saved {} records to {}.", sz, &params);
-                    } else {
-                        println!("error");
-                    }
-                }
-                _ => println!("not ready for {} yet", cmd),
-            }
+            self.process_command(&input);
         }
 
         Ok(())
+    }
+
+    /// process the command line from prompt
+    fn process_command(&mut self, input: &str) {
+        let (cmd, params) = split2(input);
+        match cmd.as_str() {
+            "help" => println!("{}", help(false)),
+            "dbsize" => println!("{}", self.db.dbsize()),
+            "keys" => println!("{:?}", self.db.keys()),
+            "get" => {
+                if let Some(value) = self.db.get(&params) {
+                    let val = value.clone();
+                    let sval = String::from_utf8(val).unwrap();
+                    println!("{:?} -> {}", value, sval);
+                } else {
+                    println!("error");
+                }
+            }
+            "set" => {
+                let (key, value) = split2(&params);
+                if let Some(value) = self.db.set(&key, value.into_bytes()) {
+                    let val = value.clone();
+                    let sval = String::from_utf8(val).unwrap();
+                    println!("{:?} -> {}", value, sval);
+                } else {
+                    println!("ok");
+                }
+            }
+            "remove" => {
+                if let Some(value) = self.db.remove(&params) {
+                    let val = value.clone();
+                    let sval = String::from_utf8(val).unwrap();
+                    println!("{:?} -> {}", value, sval);
+                } else {
+                    println!("ok");
+                }
+            }
+            "loaddb" => {
+                if let Ok(sz) = self.db.loaddb(&params) {
+                    println!("loaded {} records.", sz);
+                } else {
+                    println!("error");
+                }
+            }
+            "savedb" => {
+                if let Ok(sz) = self.db.savedb(&params) {
+                    println!("saved {} records to {}.", sz, &params);
+                } else {
+                    println!("error");
+                }
+            }
+            _ => println!("not ready for {} yet", cmd),
+        }
     }
 }
 
@@ -141,12 +146,39 @@ impl Client {
 mod tests {
     use super::*;
 
+    // create a reader for each command
+    fn quit_prompt() -> String {
+        "quit".to_string()
+    }
+
     #[test]
     fn create_client() {
         let db = DataStore::create();
         let client = Client::create(db);
         println!("{:?}", client);
         assert_eq!(client.db.dbsize(), 0);
+    }
+
+    #[test]
+    fn test_commands() {
+        let db = DataStore::create();
+        let mut client = Client {
+            db,
+            prompter: quit_prompt,
+        };
+        let resp = client.start();
+        assert!(resp.is_ok());
+
+        client.process_command("dbsize");
+        client.process_command("keys");
+        client.process_command("help");
+        client.process_command("set u101");
+        client.process_command("set u101 my thing");
+        client.process_command("get u101");
+        client.process_command("remove u101");
+        client.process_command("remove u101");
+        client.process_command("get u101");
+        client.process_command("flarb");
     }
 
     #[test]
