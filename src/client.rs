@@ -179,6 +179,10 @@ mod tests {
         client.process_command("remove u101");
         client.process_command("get u101");
         client.process_command("flarb");
+        client.process_command("loaddb bad-file");
+        client.process_command("loaddb tests/users-ref.kv");
+        client.process_command("savedb /my/bad/file/thing.kv");
+        client.process_command("savedb tests/repl-save-out.kv");
     }
 
     #[test]
