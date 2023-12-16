@@ -42,15 +42,30 @@ pub fn help(startup: bool) -> String {
     buf
 }
 
-#[derive(Debug, Default)]
+/// read the next repl command from stdin
+fn read_input() -> String {
+    let mut input = String::new();
+
+    io::stdin()
+        .read_line(&mut input)
+        .expect("Failed to read line");
+
+    input
+}
+
+#[derive(Debug, Clone)]
 pub struct Client {
     db: DataStore,
+    prompter: fn() -> String,
 }
 
 impl Client {
     /// create with a data store, possibly loaded with data
     pub fn create(db: DataStore) -> Client {
-        Client { db }
+        Client {
+            db,
+            prompter: read_input,
+        }
     }
 
     /// start the repl loop
@@ -61,11 +76,7 @@ impl Client {
             ln += 1;
             print!("{} > ", ln);
             let _ = io::stdout().flush();
-            let mut input = String::new();
-
-            io::stdin()
-                .read_line(&mut input)
-                .expect("failed to read line");
+            let input = (self.prompter)();
 
             if input.starts_with("quit") {
                 break;
