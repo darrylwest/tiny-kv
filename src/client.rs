@@ -43,7 +43,9 @@ pub fn help(startup: bool) -> String {
 }
 
 /// read the next repl command from stdin
-fn read_input() -> String {
+fn read_input(prompt: &str) -> String {
+    println!("{}", prompt);
+    let _ = io::stdout().flush();
     let mut input = String::new();
 
     io::stdin()
@@ -56,7 +58,7 @@ fn read_input() -> String {
 #[derive(Debug, Clone)]
 pub struct Client {
     db: DataStore,
-    prompter: fn() -> String,
+    prompter: fn(&str) -> String,
 }
 
 impl Client {
@@ -74,9 +76,8 @@ impl Client {
         let mut ln = 0;
         loop {
             ln += 1;
-            print!("{} > ", ln);
-            let _ = io::stdout().flush();
-            let input = (self.prompter)();
+            let prompt = format!("{} > ", ln);
+            let input = (self.prompter)(prompt.as_str());
 
             if input.starts_with("quit") {
                 break;
@@ -147,8 +148,17 @@ mod tests {
     use super::*;
 
     // create a reader for each command
-    fn quit_prompt() -> String {
-        "quit".to_string()
+    fn mock_prompt(prompt: &str) -> String {
+        println!("{}", prompt);
+        let _ = io::stdout().flush();
+
+        std::thread::sleep(std::time::Duration::from_millis(10));
+
+        if prompt.starts_with("2") {
+            "quit".to_string()
+        } else {
+            "dbsize".to_string()
+        }
     }
 
     #[test]
@@ -164,8 +174,9 @@ mod tests {
         let db = DataStore::create();
         let mut client = Client {
             db,
-            prompter: quit_prompt,
+            prompter: mock_prompt,
         };
+
         let resp = client.start();
         assert!(resp.is_ok());
     }
