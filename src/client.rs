@@ -42,10 +42,11 @@ pub fn help(startup: bool) -> String {
     buf
 }
 
-/// read the next repl command from stdin
-fn read_input(prompt: &str) -> String {
-    println!("{}", prompt);
+/// write the prompt # > then read the next repl command from stdin
+fn read_input(line_num: usize, prompt: &str) -> String {
+    println!("{}{} ", line_num, prompt);
     let _ = io::stdout().flush();
+
     let mut input = String::new();
 
     io::stdin()
@@ -58,7 +59,7 @@ fn read_input(prompt: &str) -> String {
 #[derive(Debug, Clone)]
 pub struct Client {
     db: DataStore,
-    prompter: fn(&str) -> String,
+    prompter: fn(usize, &str) -> String,
 }
 
 impl Client {
@@ -76,8 +77,7 @@ impl Client {
         let mut ln = 0;
         loop {
             ln += 1;
-            let prompt = format!("{} > ", ln);
-            let input = (self.prompter)(prompt.as_str());
+            let input = (self.prompter)(ln, " >");
 
             if input.starts_with("quit") {
                 break;
@@ -148,16 +148,20 @@ mod tests {
     use super::*;
 
     // create a reader for each command
-    fn mock_prompt(prompt: &str) -> String {
-        println!("{}", prompt);
+    fn mock_prompt(ln: usize, prompt: &str) -> String {
+        println!("{}{}", ln, prompt);
         let _ = io::stdout().flush();
 
         std::thread::sleep(std::time::Duration::from_millis(10));
 
-        if prompt.starts_with("2") {
-            "quit".to_string()
-        } else {
-            "dbsize".to_string()
+        match ln {
+            1 => "set u999 dpw".to_string(),
+            2 => "keys".to_string(),
+            3 => "dbsize".to_string(),
+            4 => "get u999".to_string(),
+            5 => "remove u999".to_string(),
+            6 => "dbsize".to_string(),
+            _ => "quit".to_string(),
         }
     }
 
