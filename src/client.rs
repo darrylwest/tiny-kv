@@ -44,7 +44,7 @@ pub fn help(startup: bool) -> String {
 
 /// write the prompt # > then read the next repl command from stdin
 fn read_input(line_num: usize, prompt: &str) -> String {
-    println!("{}{} ", line_num, prompt);
+    print!("{}{} ", line_num, prompt);
     let _ = io::stdout().flush();
 
     let mut input = String::new();
