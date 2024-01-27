@@ -605,7 +605,7 @@ dependencies = [
 
 [[package]]
 name = "tiny-kv"
-version = "0.3.4"
+version = "0.4.1"
 dependencies = [
  "anyhow",
  "ascii",
