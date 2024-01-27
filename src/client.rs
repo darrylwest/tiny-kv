@@ -60,6 +60,7 @@ fn read_input(line_num: usize, prompt: &str) -> String {
 pub struct Client {
     db: DataStore,
     prompter: fn(usize, &str) -> String,
+    datafile: Option<String>,
 }
 
 impl Client {
@@ -68,6 +69,7 @@ impl Client {
         Client {
             db,
             prompter: read_input,
+            datafile: None,
         }
     }
 
@@ -87,6 +89,11 @@ impl Client {
         }
 
         Ok(())
+    }
+
+    // return the data file or None if it hasn't been set via loaddb
+    pub fn get_datafile(&self) -> Option<String> {
+        self.datafile.clone()
     }
 
     /// process the command line from prompt
@@ -126,6 +133,8 @@ impl Client {
             }
             "loaddb" => {
                 if let Ok(sz) = self.db.loaddb(&params) {
+                    let filename = params.to_string();
+                    self.datafile = Some(filename);
                     println!("loaded {} records.", sz);
                 } else {
                     println!("error");
@@ -179,6 +188,7 @@ mod tests {
         let mut client = Client {
             db,
             prompter: mock_prompt,
+            datafile: None,
         };
 
         let resp = client.start();
@@ -189,6 +199,8 @@ mod tests {
     fn test_commands() {
         let db = DataStore::create();
         let mut client = Client::create(db);
+
+        assert!(client.get_datafile().is_none());
 
         client.process_command("dbsize");
         client.process_command("keys");
@@ -201,7 +213,10 @@ mod tests {
         client.process_command("get u101");
         client.process_command("flarb");
         client.process_command("loaddb bad-file");
+        assert!(client.get_datafile().is_none());
         client.process_command("loaddb tests/users-ref.kv");
+        assert!(client.get_datafile().is_some());
+        assert_eq!(client.get_datafile().unwrap(), "tests/users-ref.kv");
         client.process_command("savedb /my/bad/file/thing.kv");
         client.process_command("savedb tests/repl-save-out.kv");
     }
